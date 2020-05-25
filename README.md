@@ -2,7 +2,7 @@
 
 ## XunmaDb的介绍
 
-XunmaDb(寻码图数据库)是个混合数据库，其中包括了键值对数据库，json数据库，sql数据图，图数据库。
+XunmaDb(寻码图数据库)是个混合数据库，其中包括了key-value数据库，json数据库，sql数据库，图数据库。
 
 * XunmaDb支持直接集成到c/c++程序
 * XunmaDb支持服务器模式和集群模式和本地模式
