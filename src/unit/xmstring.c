@@ -1,4 +1,3 @@
-#include "xmtypedef.h"
 #include "xmstring.h"
 
 xmstring *newXmStr()

@@ -1,3 +1,5 @@
+#include <stdio.h>
+#include <stdlib.h>
 #include "xmtest.h"
 
 int gtests = 0;

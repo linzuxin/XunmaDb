@@ -1,6 +1,8 @@
 #ifndef _XM_STRING_H__    
 #define _XM_STRING_H__   
 
+#include "xmtypedef.h"
+
 typedef struct
 {
     xmbyte xmstr;
