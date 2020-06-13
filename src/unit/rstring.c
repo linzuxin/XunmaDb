@@ -1,21 +1,71 @@
 #include <limits.h>
+#include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include "rstring.h"
 
-/*创建字符串*/
-sds sdsnewlen(const void *init, size_t initlen)
+/***判断字符串类型***/
+//size_t就是unsigned long long
+char structType(size_t string_size)
+{
+    xmRepeat(16,xmType,string_size);
+//32位系统下LONG_MAX占4字节，LLONG_MAX占8字节；
+//64位系统下LONG_MAX占8字节，LLONG_MAX占8字节；
+//故若为64位系统要区分类型是RSTRING_TYPE_32还是RSTRING_TYPE_64，32位系统不区分
+    #if (LONG_MAX == LLONG_MAX)
+        {
+            xmType(32,string_size);
+            return RSTRING_TYPE_64;
+        }
+    #else
+        return RSTRING_TYPE_32;
+    #endif
+}
+
+/***根据类型判断动态字符串结构体的大小（不包含字符串内容）***/
+int HeaderSize(char type)
+{
+    char currType = type & 7;
+    xmRepeat(64,xmHeader,currType);    
+    return 0;
+}
+
+/***字符串剩余空闲长度***/
+size_t rstringAvail(pstr s)
+{
+    char currType = structType(strlen(s));
+    xmRepeat(64,xmAvail,currType);
+    return 0;    
+}
+
+/***获取字符串长度***/
+size_t rstringLen(pstr s)
+{    
+    char currType = structType(strlen(s));
+    xmRepeat(64,xmStringLen,currType);
+    return 0;
+}
+
+/***设置字符串***/
+void rstringSet(pstr s, size_t newlen)
+{
+    char currType = structType(strlen(s));
+    xmRepeat(64,xmStringSet,currType);    
+}
+
+/***创建字符串***/
+pstr rstringNewLen(const void *init, size_t initlen)
 {   
     void *sh;//指向动态字符串结构体的的指针
-    sds s;//指向动态字符串内容的指针
-    char type = sdsReqTyp(initlen);//获取动态字符串结构体的类型
-    //若SDS_TYPE_5类型字符串为空，转换成SDS_TYPE_8类型
-    if(type == SDS_TYPE_5 && initlen == 0)
+    pstr s;//指向动态字符串内容的指针
+    char type = structType(initlen);//获取动态字符串结构体的类型
+    //若RSTRING_TYPE_5类型字符串为空，转换成RSTRING_TYPE_8类型
+    if(type == RSTRING_TYPE_5 && initlen == 0)
     {
-        type = SDS_TYPE_8;
+        type = RSTRING_TYPE_8;
     }
-    int hdrlen = sdsHdrSize(type);//获取动态字符串结构体的头部大小
+    int hdrlen = HeaderSize(type);//获取动态字符串结构体的头部大小
     sh = malloc(hdrlen + initlen + 1);//给指向动态字符串结构体的头部的指针分配空间
     if(sh == NULL)
     {
@@ -29,52 +79,7 @@ sds sdsnewlen(const void *init, size_t initlen)
     //计算指向动态字符串内容的指针的位置：
     //位置=动态字符串头部的指针地址+头部长度
     s = (char*)sh + hdrlen;
-    //计算指向动态字符串类型的指针的位置：
-    //位置=动态字符串头部的指针地址-1
-    switch (type)
-    {
-        case SDS_TYPE_5:
-        {
-            struct sdshdr5 *start = (void*)((s) - (sizeof(struct sdshdr5)));
-            //存储flag结构：高五位存字符串长度，低三位存类型
-            start->flags = type | (initlen << 3);
-            break;
-        }
-        case SDS_TYPE_8:
-        {
-            struct sdshdr8 *start = (void*)((s) - (sizeof(struct sdshdr8)));
-            start->len = initlen;
-            start->alloc = 255;
-            start->flags = type;
-            break;
-        }
-        case SDS_TYPE_16:
-        {
-            struct sdshdr16 *start = (void*)((s) - (sizeof(struct sdshdr16)));
-            start->len = initlen;
-            start->alloc = 65535;
-            start->flags = type;
-            break;
-        }
-        case SDS_TYPE_32:
-        {
-            struct sdshdr32 *start = (void*)((s) - (sizeof(struct sdshdr32)));
-            start->len = initlen;
-            start->alloc = 4294967295;
-            start->flags = type;
-            break;
-        }
-        case SDS_TYPE_64:
-        {
-            struct sdshdr64 *start = (void*)((s) - (sizeof(struct sdshdr64)));
-            start->len = initlen;
-            start->alloc = 18446744073709551615;
-            start->flags = type;
-            break;
-        }    
-        default:
-            break;
-    }
+    xmRepeat(64,xmStringNewLen,type);
     if(initlen && init)
     {
         //复制init中的内容到s中去。
@@ -84,15 +89,15 @@ sds sdsnewlen(const void *init, size_t initlen)
     return s;
 }
 
-sds sdsnew(const char *init)
+pstr rstringNew(const char *init)
 {
     size_t initlen = (init == NULL)? 0 : strlen(init);//获取动态字符串长度
     return sdsnewlen(init, initlen);
 }
 
 
-/*为字符串重新分配容量*/
-sds sdsMakeRoomFor(sds s, size_t addlen)
+/***为字符串重新分配容量***/
+pstr sdsMakeRoomFor(pstr s, size_t addlen)
 {
     // size_t avail = sdsavail(s);
     //剩余未分配长度满足当前新增需求的直接返回
@@ -101,16 +106,16 @@ sds sdsMakeRoomFor(sds s, size_t addlen)
     //     return s;
     // }
     //剩余未分配长度不满足当前新增需求，重新分配
-    size_t len = sdslen(s);
-    char type = sdsReqTyp(len);
+    size_t len = rstringLen(s);
+    char type = structType(len);
     size_t newlen = (len + addlen);
-    char newtype = sdsReqTyp(newlen);
+    char newtype = structType(newlen);
     void *sh, *newsh;
-    sh = (char*)s - sdsHdrSize(type);
-    size_t newhdrlen = sdsHdrSize(newtype);
-    if(newtype == SDS_TYPE_5)
+    sh = (char*)s - HeaderSize(type);
+    size_t newhdrlen = HeaderSize(newtype);
+    if(newtype == RSTRING_TYPE_5)
     {
-        newtype = SDS_TYPE_8;
+        newtype = RSTRING_TYPE_8;
     }
     //类型相同则重新分配结构体空间即可
     if(type == newtype)
@@ -145,35 +150,36 @@ sds sdsMakeRoomFor(sds s, size_t addlen)
     return s;    
 }
 
-
-/*拼接字符串*/
-sds sdscatlen(sds s, const void *t, size_t addlen) {
-    size_t currlen = sdslen(s);
+/***拼接字符串***/
+pstr sdscatlen(pstr s, const void *t, size_t addlen) 
+{
+    size_t currlen = rstringLen(s);
     s = sdsMakeRoomFor(s,addlen);
     if (s == NULL)
     {
         return NULL;
     } 
     memcpy(s+currlen, t, addlen);
-    sdsset(s, currlen + addlen);
+    rstringSet(s, currlen + addlen);
     s[currlen + addlen] = '\0';
     return s;
 }
 
-sds sdscat(sds s, const char *t) {
+pstr sdscat(pstr s, const char *t) 
+{
     return sdscatlen(s, t, strlen(t));
 }
 
 
-/*释放字符串*/
-void sdsfree(sds s)
+/***释放字符串***/
+void sdsfree(pstr s)
 {
     if(s == NULL)
     {
         return;
     }
-    char type = sdsReqTyp(strlen(s));
-    int hdrSize = sdsHdrSize(type);
+    char type = structType(strlen(s));
+    int hdrSize = HeaderSize(type);
     void *sh = s-hdrSize;
     free(sh);
     sh = NULL;
