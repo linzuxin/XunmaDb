@@ -22,6 +22,7 @@ char structType(size_t string_size)
 int HeaderSize(char type)
 {
     char currType = type & 7;
+    xmHeader5();
     xmRepeat(64, xmHeader, currType);
     return 0;
 }

@@ -26,7 +26,7 @@ size_t gAlloc[] = {0, 255, 65535, 4294967295, 18446744073709551615};
 #define xmRepeat(n, m, p) xmAppend(xmRepeat_, n)(m, p)
 #define xmAppend(x, y) x##y
 #define xmRepeat_0(m, p)
-#define xmRepeat_5(m, p) xmRepeat_0(m, p) m(5, p)
+#define xmRepeat_5(m, p)
 #define xmRepeat_8(m, p) xmRepeat_5(m, p) m(8, p)
 #define xmRepeat_16(m, p) xmRepeat_8(m, p) m(16, p)
 #define xmRepeat_32(m, p) xmRepeat_16(m, p) m(32, p)
@@ -51,15 +51,15 @@ size_t gAlloc[] = {0, 255, 65535, 4294967295, 18446744073709551615};
 #define xmRstringTypeEqual(n, p, f) \
     if (##p == RSTRING_TYPE_##n)    \
     {                               \
-        ##fFunc(n);                 \
+        ##f(n)                      \
     }
 
 #define xmRstringStructStart(n) \
     rstring##n *start = (rstring##n *)(s - sizeof(rstring##n))
 
-#define xmHeaderFunc(n, p) return sizeof(rstring##n);
+#define xmHeaderFunc(n) return sizeof(rstring##n);
 
-#define xmAvail5Func(n)                        \
+#define xmAvailFunc5(n)                        \
     xmRstringStructStart(n);                   \
     size_t avail = 31 - ((start->flags) >> 3); \
     return avail;
@@ -74,7 +74,7 @@ size_t gAlloc[] = {0, 255, 65535, 4294967295, 18446744073709551615};
     size_t length = start->len; \
     return length;
 
-#define xmStringLen5Func(n)              \
+#define xmStringLenFunc5(n)              \
     xmRstringStructStart(n);             \
     size_t length = (start->flags) >> 3; \
     return length;
@@ -92,13 +92,14 @@ size_t gAlloc[] = {0, 255, 65535, 4294967295, 18446744073709551615};
     start->alloc = gAlloc[order]; \
     start->flags = type;
 
-#define xmHeader(n, p) xmRstringTypeEqual(n, p, xmHeader)
-#define xmStringLen(n, p) xmRstringTypeEqual(n, p, xmStringLen)
-#define xmStringLen5(n, p) xmRstringTypeEqual(n, p, xmStringLen5)
-#define xmAvail(n, p) xmRstringTypeEqual(n, p, xmAvail)
-#define xmAvail5(n, p) xmRstringTypeEqual(n, p, xmAvail5)
-#define xmStringSet(n, p) xmRstringTypeEqual(n, p, xmStringSet)
-#define xmStringNewLen(n, p) xmRstringTypeEqual(n, p, xmStringNewLen)
+#define xmHeader(n, p) xmRstringTypeEqual(n, p, xmHeaderFunc)
+#define xmHeader5() xmHeaderFunc(5)
+#define xmStringLen(n, p) xmRstringTypeEqual(n, p, xmStringLenFunc)
+#define xmStringLen5(n, p) xmRstringTypeEqual(n, p, xmStringLenFunc5)
+#define xmAvail(n, p) xmRstringTypeEqual(n, p, xmAvailFunc)
+#define xmAvail5(n, p) xmRstringTypeEqual(n, p, xmAvailFunc5)
+#define xmStringSet(n, p) xmRstringTypeEqual(n, p, xmStringSetFunc)
+#define xmStringNewLen(n, p) xmRstringTypeEqual(n, p, xmStringNewLenFunc)
 //定义结构体
 //5位字符串结构体（字符串大小为2^5-1以内）
 typedef struct
