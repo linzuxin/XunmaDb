@@ -22,8 +22,8 @@ char structType(size_t string_size)
 int HeaderSize(char type)
 {
     char currType = type & 7;
-    xmHeader5();
-    xmRepeat(64, xmHeader, currType);
+    xmHeader5(5, currType)
+    xmRepeat(64, xmHeader, currType)
     return 0;
 }
 
@@ -31,8 +31,8 @@ int HeaderSize(char type)
 size_t rstringAvail(pstr s)
 {
     char currType = structType(strlen(s));
-    xmAvail5(5, currType);
-    xmRepeat(64, xmAvail, currType);
+    xmAvail5(5, currType)
+    xmRepeat(64, xmAvail, currType)
     return 0;
 }
 
@@ -40,22 +40,15 @@ size_t rstringAvail(pstr s)
 size_t rstringLen(pstr s)
 {
     char currType = structType(strlen(s));
-    xmStringLen5(5, currType);
-    xmRepeat(64, xmStringLen, currType);
+    xmStringLen5(5, currType)
+    xmRepeat(64, xmStringLen, currType)
     return 0;
 }
 
 /***设置字符串***/
 void rstringSet(pstr s, size_t newlen)
 {
-    char currType = structType(strlen(s));
-    if (currType == RSTRING_TYPE_5)
-    {
-        rstring5 *start = (rstring5 *)(s - sizeof(rstring5));
-        start->flags = RSTRING_TYPE_5 | (newlen << 3);
-        printf("len set result:%d\n", (start->flags >> 3));
-    }
-    xmRepeat(64, xmStringSet, currType);
+    xmStringPstrFunc(xmStringSet);
 }
 
 /***创建字符串***/

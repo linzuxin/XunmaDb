@@ -53,6 +53,8 @@ size_t gAlloc[] = {0, 255, 65535, 4294967295, 18446744073709551615};
     {                               \
         ##f(n)                      \
     }
+#define xmRstringTypeEqualElse(n, p, f) \
+    else xmRstringTypeEqual(n, p, f)
 
 #define xmRstringStructStart(n) \
     rstring##n *start = (rstring##n *)(s - sizeof(rstring##n))
@@ -79,6 +81,10 @@ size_t gAlloc[] = {0, 255, 65535, 4294967295, 18446744073709551615};
     size_t length = (start->flags) >> 3; \
     return length;
 
+#define xmStringSetFunc5(n)  \
+    xmRstringStructStart(n); \
+    start->flags = RSTRING_TYPE_5 | (newlen << 3);
+
 #define xmStringSetFunc(n)   \
     xmRstringStructStart(n); \
     int order = ##n / 8;     \
@@ -92,13 +98,20 @@ size_t gAlloc[] = {0, 255, 65535, 4294967295, 18446744073709551615};
     start->alloc = gAlloc[order]; \
     start->flags = type;
 
-#define xmHeader(n, p) xmRstringTypeEqual(n, p, xmHeaderFunc)
-#define xmHeader5() xmHeaderFunc(5)
-#define xmStringLen(n, p) xmRstringTypeEqual(n, p, xmStringLenFunc)
+#define xmHeader(n, p) xmRstringTypeEqualElse(n, p, xmHeaderFunc)
+#define xmHeader5(n, p) xmRstringTypeEqual(n, p, xmHeaderFunc)
+#define xmStringLen(n, p) xmRstringTypeEqualElse(n, p, xmStringLenFunc)
 #define xmStringLen5(n, p) xmRstringTypeEqual(n, p, xmStringLenFunc5)
-#define xmAvail(n, p) xmRstringTypeEqual(n, p, xmAvailFunc)
+#define xmAvail(n, p) xmRstringTypeEqualElse(n, p, xmAvailFunc)
 #define xmAvail5(n, p) xmRstringTypeEqual(n, p, xmAvailFunc5)
-#define xmStringSet(n, p) xmRstringTypeEqual(n, p, xmStringSetFunc)
+#define xmStringSet(n, p) xmRstringTypeEqualElse(n, p, xmStringSetFunc)
+#define xmStringSet5(n, p) xmRstringTypeEqual(n, p, xmStringSetFunc5)
+
+#define xmStringPstrFunc(f)              \
+    char currType = structType(strlen(s)); \
+    xmAppend(f,5)(5, currType)              \
+    xmRepeat(64, ##f, currType)
+
 #define xmStringNewLen(n, p) xmRstringTypeEqual(n, p, xmStringNewLenFunc)
 //定义结构体
 //5位字符串结构体（字符串大小为2^5-1以内）
