@@ -3,6 +3,8 @@
 
 #include <stdlib.h>
 
+#define SKLIST_MAXLEVEL 64
+#define SKLIST_p 0.25
 //柔型数组结构体
 typedef struct skLevel
 {
@@ -28,18 +30,9 @@ typedef struct skList
     int level;//跳跃表高度（层级）
 } skList;
 
-#define SKLIST_MAXLEVEL 64
-#define SKLIST_p 0.25
-
-
-
-
-
-
-
-
-
-
-
+int skNodeRandomLevel(void);
+skList* skListCreate();
+skNode* skNodeCreate(int level, double score, char* ele);
+skNode* skNodeInsert(skList* sl, double score, char* ele);
 
 #endif

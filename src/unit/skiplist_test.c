@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include "xmtest.h"
-#include "skiplist.c"
+#include "skiplist.h"
 
 int gtests = 0;
 
@@ -39,23 +39,23 @@ static char * test_skNodeInsert()
     printf("a:%d\n",sl1->level);
     printf("b:%d\n",sl1->length);
     skNode *insertNode1 = skNodeInsert(sl1,35,"good");
-    // printf("1\n");
-    // skNode *insertNode2 = skNodeInsert(sl1,40,"nice");
-    // printf("2\n");
-    // skNode *insertNode3 = skNodeInsert(sl1,20,"hello");
-    // skNode *insertNode4 = skNodeInsert(sl1,60,"selina");
-    // skNode *insertNode5 = skNodeInsert(sl1,50,"pretty");
-    // skNode *slHeader = sl1->header;
-    // skNode *n1 = slHeader->level[0].forward;
-    // skNode *n2 = n1->level[0].forward;
-    // skNode *n3 = n1->level[0].forward;
-    // skNode *n4 = n1->level[0].forward;
-    // skNode *n5 = n1->level[0].forward;
-    // xmAssert("error, skNodeInsert error", strcmp(n1->ele,"hello")==0);
-    // xmAssert("error, skNodeInsert error", strcmp(n2->ele,"good")==0);
-    // xmAssert("error, skNodeInsert error", strcmp(n3->ele,"nice")==0);
-    // xmAssert("error, skNodeInsert error", strcmp(n4->ele,"pretty")==0);
-    // xmAssert("error, skNodeInsert error", strcmp(n5->ele,"selina")==0);
+    printf("1\n");
+    skNode *insertNode2 = skNodeInsert(sl1,40,"nice");
+    printf("2\n");
+    skNode *insertNode3 = skNodeInsert(sl1,20,"hello");
+    skNode *insertNode4 = skNodeInsert(sl1,60,"selina");
+    skNode *insertNode5 = skNodeInsert(sl1,50,"pretty");
+    skNode *slHeader = sl1->header;
+    skNode *n1 = slHeader->level[0].forward;
+    skNode *n2 = n1->level[0].forward;
+    skNode *n3 = n1->level[0].forward;
+    skNode *n4 = n1->level[0].forward;
+    skNode *n5 = n1->level[0].forward;
+    xmAssert("error, skNodeInsert error hello", strcmp(n1->ele,"hello")==0);
+    xmAssert("error, skNodeInsert error good", strcmp(n2->ele,"good")==0);
+    xmAssert("error, skNodeInsert error nice", strcmp(n3->ele,"nice")==0);
+    xmAssert("error, skNodeInsert error pretty", strcmp(n4->ele,"pretty")==0);
+    xmAssert("error, skNodeInsert error selina", strcmp(n5->ele,"selina")==0);
     return 0;
 }
 

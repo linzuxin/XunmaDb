@@ -54,7 +54,7 @@ size_t gAlloc[] = {0, 255, 65535, 4294967295, 18446744073709551615};
         ##f(n)                      \
     }
 #define xmRstringTypeEqualElse(n, p, f) \
-    else xmRstringTypeEqual(n, p, f)
+    xmRstringTypeEqual(n, p, f)
 
 #define xmRstringStructStart(n) \
     rstring##n *start = (rstring##n *)(s - sizeof(rstring##n))
@@ -104,6 +104,9 @@ size_t gAlloc[] = {0, 255, 65535, 4294967295, 18446744073709551615};
 #define xmStringLen5(n, p) xmRstringTypeEqual(n, p, xmStringLenFunc5)
 #define xmAvail(n, p) xmRstringTypeEqualElse(n, p, xmAvailFunc)
 #define xmAvail5(n, p) xmRstringTypeEqual(n, p, xmAvailFunc5)
+#define xmAvail8(n, p) xmAvail(n,p)
+#define xmAvail16(n, p) xmAvail(n,p)
+
 #define xmStringSet(n, p) xmRstringTypeEqualElse(n, p, xmStringSetFunc)
 #define xmStringSet5(n, p) xmRstringTypeEqual(n, p, xmStringSetFunc5)
 

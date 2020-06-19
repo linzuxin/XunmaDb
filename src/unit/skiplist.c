@@ -17,6 +17,7 @@ int skNodeRandomLevel(void)
 //创建跳跃表节点
 skNode* skNodeCreate(int level, double score, char* ele)
 {
+    printf("enter skNodeCreate\n");
     skNode *n = (skNode *)malloc(sizeof(*n) + level*sizeof(skLevel));
     n ->score = score;
     n ->ele = ele;
@@ -59,22 +60,23 @@ skNode* skNodeInsert(skList* sl, double score, char* ele)
     {
         printf("first for i:%d\n",i);
         skNode* fNode = cNode->level[i].forward;
-        printf("fNode exists: %d",fNode == NULL);
+        printf("fNode exists: %d,%lf\n",fNode == NULL,score);
         //while循环，在当前层不断往右找，当当前节点的右侧节点为空或者大于插入节点时停止
-        while (!fNode )
-        //  && fNode->score < score
-        // || (fNode->score == score && strcmp(fNode->ele, ele) < 0)
+        while (fNode && (fNode->score < score || (fNode->score == score && strcmp(fNode->ele, ele) < 0)))
         {
             printf("enter search circle\n");
             cNode = fNode;
+            break;
         }
         //将当前节点存在新节点数组中（实际存下来的会是头结点，或者当前层插入节点左侧的第一个节点）
         printf("out of search circle \n");
         newlist[i] = cNode;  
-        printf("newlist[%d]: %d",i,newlist[i] != NULL);
+        printf("newlist[%d]: %d\n",i,newlist[i] != NULL);
     }
     //生成插入节点的层级（64内的随机数）
     int insLevel = skNodeRandomLevel();
+      printf("level %d %d \n",insLevel, sl->level);
+      printf("----------------------------\n");
     //若生成层数大于跳跃表当前层数，则将对应新节点数组的元素赋值成头部节点，并将跳跃表层数变更
     if(insLevel > sl->level)
     {

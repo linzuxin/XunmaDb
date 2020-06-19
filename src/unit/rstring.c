@@ -22,27 +22,24 @@ char structType(size_t string_size)
 int HeaderSize(char type)
 {
     char currType = type & 7;
-    xmHeader5(5, currType)
-    xmRepeat(64, xmHeader, currType)
-    return 0;
+    xmHeader5(5, currType);
+        xmRepeat(64, xmHeader, currType) return 0;
 }
 
 /***字符串剩余空闲长度***/
 size_t rstringAvail(pstr s)
 {
     char currType = structType(strlen(s));
-    xmAvail5(5, currType)
-    xmRepeat(64, xmAvail, currType)
-    return 0;
+    xmAvail5(5, currType);
+        xmRepeat(64, xmAvail, currType) return 0;
 }
 
 /***获取字符串长度***/
 size_t rstringLen(pstr s)
 {
     char currType = structType(strlen(s));
-    xmStringLen5(5, currType)
-    xmRepeat(64, xmStringLen, currType)
-    return 0;
+    xmStringLen5(5, currType);
+    xmRepeat(64, xmStringLen, currType) return 0;
 }
 
 /***设置字符串***/
