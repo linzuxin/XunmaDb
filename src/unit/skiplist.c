@@ -27,9 +27,10 @@ skNode* skNodeCreate(int level, double score, char* ele)
 //创建跳跃表
 skList* skListCreate()
 {
+    printf("enter skNodeListCreate\n");
     skList *sl = (skList*)malloc(sizeof(*sl));
     sl->header = skNodeCreate(SKLIST_MAXLEVEL, 0, NULL);
-    sl->header->backword = NULL;
+    sl->header->backward = NULL;
     sl->level = 1;
     sl->length = 0;
     sl->tail = NULL;
@@ -60,53 +61,76 @@ skNode* skNodeInsert(skList* sl, double score, char* ele)
     {
         printf("first for i:%d\n",i);
         skNode* fNode = cNode->level[i].forward;
-        printf("fNode exists: %d,%lf\n",fNode == NULL,score);
+        printf("fNode exists: %d\n",fNode == NULL);
         //while循环，在当前层不断往右找，当当前节点的右侧节点为空或者大于插入节点时停止
-        while (fNode && (fNode->score < score || (fNode->score == score && strcmp(fNode->ele, ele) < 0)))
+        while (cNode->level[i].forward && (cNode->level[i].forward->score < score || (cNode->level[i].forward->score == score && strcmp(cNode->level[i].forward->ele, ele) < 0)))
         {
             printf("enter search circle\n");
-            cNode = fNode;
-            break;
+            cNode = cNode->level[i].forward;
+            printf("cNode's score: %lf\n",cNode->score);
         }
         //将当前节点存在新节点数组中（实际存下来的会是头结点，或者当前层插入节点左侧的第一个节点）
         printf("out of search circle \n");
         newlist[i] = cNode;  
         printf("newlist[%d]: %d\n",i,newlist[i] != NULL);
+        printf("newlist[%d]'s score: %lf\n",i,newlist[i]->score);
     }
     //生成插入节点的层级（64内的随机数）
     int insLevel = skNodeRandomLevel();
-      printf("level %d %d \n",insLevel, sl->level);
-      printf("----------------------------\n");
+      printf("insLevel: %d,  slLevel: %d \n",insLevel, sl->level);
     //若生成层数大于跳跃表当前层数，则将对应新节点数组的元素赋值成头部节点，并将跳跃表层数变更
     if(insLevel > sl->level)
     {
+        printf("enter override level\n");
         for (i = sl->level; i < insLevel; i++)
         {
+            printf("second for i:%d\n",i);
             newlist[i] = sl->header;
+            printf("newlist[%d]: %d\n",i,newlist[i] != NULL);
         }
         sl->level = insLevel; 
+        printf("new slLevel: %d\n",sl->level);
     }
     //生成插入节点
     skNode *insNode = skNodeCreate(insLevel, score, ele);
+    printf("createnode string: %s\n",insNode->ele);
+    printf("createnode score: %lf\n",insNode->score);
     //for循环
     //为插入节点的每个层级的forward指针赋值（应为查寻插入节点的路径下每层查寻的最后一个节点）
     //修改查寻插入节点路径中每层对应节点的forward指针为插入节点
-    for (i = 0; i < insLevel-1; i++)
+    for (i = 0; i < insLevel; i++)
     {
+        printf("third for i:%d\n",i);
         insNode->level[i].forward = newlist[i]->level[i].forward;
+        printf("newnodeLevel[%d]forward: %d\n",i,insNode->level[i].forward == NULL);
+        if(insNode->level[i].forward)
+        {
+            printf("newnodeLevel[%d]forward's score: %lf\n",i,insNode->level[i].forward->score);
+        }
         newlist[i]->level[i].forward = insNode;
+        printf("newlist[%d]forward: %d\n",i,newlist[i]->level[i].forward == NULL);
+        if(newlist[i]->level[i].forward)
+        {
+            printf("newlist[%d]forward's score: %lf\n",i,newlist[i]->level[i].forward->score);
+        }
+
     }
     //若插入节点的前一节点为头结点，则backward指针为空，否则为前一节点。
-    insNode->backword = (newlist[0] == sl->header) ? NULL : newlist[0];
+    insNode->backward = (newlist[0] == sl->header) ? NULL : newlist[0];
+    printf("isNode's backward exist: %d\n",insNode->backward==NULL);
     //设置插入节点的后一节点的backward指针
     if (insNode->level[0].forward)
     {
         skNode *insfNode = insNode->level[0].forward;
-        insfNode->backword = insNode;
+        insfNode->backward = insNode;
+        printf("insfNode's backward's score:%lf\n",insfNode->backward->score);
     }
     else
     {
         sl->tail = insNode;
+        printf("sl's tail's score: %lf\n",sl->tail->score);
     }
+    sl->length++;
+    printf("sl's length: %d\n",sl->length);
     return insNode;
 }
