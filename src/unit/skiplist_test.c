@@ -36,21 +36,41 @@ static char * test_skListCreate()
 static char * test_skNodeInsert()
 {
     skList *sl1 = skListCreate(); 
-    printf("a:%d\n",sl1->level);
-    printf("b:%d\n",sl1->length);
+    printf("insert1------------------------------------------------------------------------\n");
     skNode *insertNode1 = skNodeInsert(sl1,35,"good");
-    printf("1\n");
+    printf("insert2------------------------------------------------------------------------\n");
     skNode *insertNode2 = skNodeInsert(sl1,40,"nice");
-    printf("2\n");
+    printf("insert3------------------------------------------------------------------------\n");
     skNode *insertNode3 = skNodeInsert(sl1,20,"hello");
+    printf("insert4------------------------------------------------------------------------\n");
     skNode *insertNode4 = skNodeInsert(sl1,60,"selina");
+    printf("insert5------------------------------------------------------------------------\n");
     skNode *insertNode5 = skNodeInsert(sl1,50,"pretty");
+
+    printf("----------------sl1's struct print-----------------\n");
+    printf("skiplist's length: %d\n",sl1->length);
+    printf("skiplist's level: %d\n",sl1->level);
+    printf("skiplist's head's score: %lf\n",sl1->header->score);
+    printf("skiplist's tail's score: %lf\n",sl1->tail->score);
+    for(int i = sl1->level-1; i >- 1; i--)
+    {
+        skNode * currNode = sl1->header;
+        printf("line %d\n",i);
+        while (currNode->level[i].forward)
+        {
+            printf(" %lf , ",currNode->level[i].forward->score);
+            currNode = currNode->level[i].forward;
+        }
+        printf("\n");
+    }
+
+    printf("insert   result------------------------------------------------------------------------\n");
     skNode *slHeader = sl1->header;
     skNode *n1 = slHeader->level[0].forward;
     skNode *n2 = n1->level[0].forward;
-    skNode *n3 = n1->level[0].forward;
-    skNode *n4 = n1->level[0].forward;
-    skNode *n5 = n1->level[0].forward;
+    skNode *n3 = n2->level[0].forward;
+    skNode *n4 = n3->level[0].forward;
+    skNode *n5 = n4->level[0].forward;
     xmAssert("error, skNodeInsert error hello", strcmp(n1->ele,"hello")==0);
     xmAssert("error, skNodeInsert error good", strcmp(n2->ele,"good")==0);
     xmAssert("error, skNodeInsert error nice", strcmp(n3->ele,"nice")==0);
@@ -61,9 +81,9 @@ static char * test_skNodeInsert()
 
 static char * all_tests() 
 {
-    // xmRunTest(test_skNodeRandomLevel);
-    // xmRunTest(test_skNodeCreate);
-    // xmRunTest(test_skListCreate);
+    xmRunTest(test_skNodeRandomLevel);
+    xmRunTest(test_skNodeCreate);
+    xmRunTest(test_skListCreate);
     xmRunTest(test_skNodeInsert);
     return 0;
 }

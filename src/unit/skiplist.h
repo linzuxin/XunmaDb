@@ -17,7 +17,7 @@ typedef struct skNode
 {
     char* ele;//字符串类型
     double score;//存储排序分值
-    struct skNode *backword;//后退指针（前一个指针）
+    struct skNode *backward;//后退指针（前一个指针）
     skLevel level[];
 } skNode;
 
