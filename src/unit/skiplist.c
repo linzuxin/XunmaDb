@@ -134,3 +134,109 @@ skNode* skNodeInsert(skList* sl, double score, char* ele)
     printf("sl's length: %d\n",sl->length);
     return insNode;
 }
+
+//获取跳跃表节点
+skNode* skNodeGet(skList *sl, double score, char *ele)
+{
+    printf("enter skNodeGet\n");
+    int i;
+    skNode *cNode = sl->header;
+    printf("sl's header exist: %d\n",cNode == NULL);
+    skNode *node;
+    for (i = sl->level-1; i > -1; i--)
+    {
+        printf("first for i:%d\n",i);
+        while (cNode->level[i].forward)
+        {
+            printf("enter while,the forward's score: %lf\n",cNode->level[i].forward->score);
+            if((cNode->level[i].forward->score == score) && (strcmp(cNode->level[i].forward->ele, ele) == 0))
+            {
+                printf("enter if\n");
+                printf("return result: %lf\n",cNode->level[i].forward->score);
+                return cNode->level[i].forward;
+            }
+            else if(cNode->level[i].forward && (cNode->level[i].forward->score < score || (cNode->level[i].forward->score == score && strcmp(cNode->level[i].forward->ele, ele) < 0)))
+            {
+                printf("enter else if\n");
+                cNode = cNode->level[i].forward;
+                printf("the cnode's score :%lf\n",cNode->score);
+            }
+            else
+            {
+                printf("enter else \n");
+                break;
+            }
+                                      
+        }         
+    }
+    return NULL;
+}
+
+//删除跳跃表节点
+void skNodeDelete(skList* sl, skNode* node)
+{
+    printf("----enter skNodeDel----\n");
+    int i;
+    skNode *cNode = sl->header;
+    printf("sl's header exist: %d\n",cNode == NULL);
+    skNode *newlist[SKLIST_MAXLEVEL];
+    for (i = sl->level-1; i > -1; i--)
+    {
+        printf("first for i:%d\n",i);
+        printf("cNode->level[i].forward: %lf\n",cNode->level[i].forward->score);
+        printf("node->score: %lf\n",node->score);
+        while (cNode->level[i].forward && (cNode->level[i].forward->score < node->score || (cNode->level[i].forward->score == node->score && strcmp(cNode->level[i].forward->ele, node->ele) < 0)))
+        {
+            printf("enter while\n");
+            cNode = cNode->level[i].forward;
+            printf("the cNode's score: %lf\n",cNode->score);
+        }
+        newlist[i] = cNode;
+        printf("newlist[%d]'s score: %lf\n",i,newlist[i]->score);
+        printf("equal?:%d\n",newlist[i]->level[i].forward == node);
+        if(newlist[i]->level[i].forward == node)
+        {
+            printf("enter if\n");
+            newlist[i]->level[i].forward = node->level[i].forward;
+            printf("%d\n",newlist[i]->level[i].forward == NULL);
+            if( newlist[i]->level[i].forward)
+            {
+                printf(" newlist[%d]'s forward: %lf\n",i,newlist[i]->level[i].forward->score);
+            }
+            
+        }       
+    }
+    if(node->level[0].forward)
+    {
+        printf("enter backward if\n");
+        node->level[0].forward->backward =  node->backward;
+        if(node->backward)
+        {
+            printf("node's forward's backward: %lf\n",node->level[0].forward->backward->score);
+        }        
+    }
+    else
+    {
+        printf("enter backward else\n");
+        sl->tail = node->backward;
+        printf("list's tail: %lf\n",sl->tail->score);
+    }
+    printf("highest header level ? : %d\n",sl->header->level[sl->level-1].forward == NULL);
+    if(sl->header->level[sl->level-1].forward != NULL)
+    {
+        printf("%lf\n",sl->header->level[sl->level-1].forward->score);
+    }
+    
+    while(sl->level > 1 && (sl->header->level[sl->level-1].forward == NULL))
+    {
+        printf("before: %d\n",sl->level);
+        sl->level--;
+        printf("after: %d\n",sl->level);
+    }
+    sl->length--;
+    printf("sl's level: %d\n",sl->level);
+    printf("sl's length: %d\n",sl->length);
+}
+
+//删除跳跃表
+

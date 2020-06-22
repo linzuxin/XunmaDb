@@ -34,5 +34,7 @@ int skNodeRandomLevel(void);
 skList* skListCreate();
 skNode* skNodeCreate(int level, double score, char* ele);
 skNode* skNodeInsert(skList* sl, double score, char* ele);
+skNode* skNodeGet(skList *sl, double score, char *ele);
+void skNodeDelete(skList* sl, skNode* node);
 
 #endif
