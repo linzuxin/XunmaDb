@@ -22,47 +22,50 @@ typedef struct
 {
     xmLinkNode link[xmLinkLen]; //固定大小
     xmbyte len;                 //使用长度
-} xmSkipNodeArray;              //固定大小数组
-
-typedef struct
-{
-    xmSkipNodeArray *linkNode; //链表
-    xmSkipNodeArray *nextNode; //下个链表
-    xmbyte len;                //长度
-} xmSkipZeroLink;              //跳跃表  0层链表
+    xmSkipNodeList *next;       //下个链表
+} xmSkipNodeList;              //固定大小数组
 
 //行数1以上的结点
 typedef struct
 {
-    xmSkipNodeArray **linkNode; //关联的0层链表
+    xmSkipNodeList **linkNode; //关联的0层链表
 } xmLevelNode;
 
 typedef struct
 {
-    xmSkipZeroLink *zeroLink;                //零层链
-    xmLevelNode *levelNodeArray[xmLevelLen]; //指向xmLevelNode基本
+    xmSkipNodeList *zeroLink;                //零层链
+    xmLevelNode *levelNodeList[xmLevelLen]; //指向xmLevelNode基本
     xmbyte len;                              //层级初始化长度
+    int linkLen;                              //零层链长度
 } xmSkipLink;
 
 //创建零层链
-xmSkipZeroLink *xmSkipZeroLinkCreate();
+xmSkipNodeList *xmSkipZeroLinkCreate(xmSkipNodeList *);
 //创建跳跃表
 xmSkipLink *xmSkipLinkCreate();
 //创建数据结点
 xmLinkNode *xmLinkNodeCreate(double score, char *ele);
 //插入节点
-xmbyte xmLinkNodeInsert(xmLinkNode *node);
+xmbyte xmLinkNodeInsert(xmSkipLink *skipLink,xmLinkNode *node);
 //查找要插入的节点数组
-xmSkipNodeArray *findSkipNodeArray(xmSkipLink *skipLink, xmLinkNode *node);
+xmSkipNodeList *findSkipNodeList(xmSkipLink *skipLink, xmLinkNode *node);
 
 //查找要插入的节点数组,下面两个函数一样的结果,写法不一样
-xmSkipNodeArray *findLevelNodeFor(xmLevelNode *levelNode, xmLinkNode *node, xmbyte level);
-xmSkipNodeArray *findLevelNodeWhile(xmLevelNode *levelNode, xmLinkNode *node, xmbyte level);
+xmSkipNodeList *findLevelNodeFor(xmLevelNode *levelNode, xmLinkNode *node, xmbyte level);
+xmSkipNodeList *findLevelNodeWhile(xmLevelNode *levelNode, xmLinkNode *node, xmbyte level);
 
 //是否可以插入到SkipNode,下面两个函数一样的结果,写法不一样,定义函数里面参数的可以省略，实现里面不可以省略
-xmSkipNodeArray *isSkipNodeArray(xmSkipNodeArray *, xmLinkNode *);
-xmSkipNodeArray *isSkipNodePoint(xmSkipNodeArray *, xmLinkNode *);
+xmSkipNodeList *isSkipNodeList(xmSkipNodeList *, xmLinkNode *);
+xmSkipNodeList *isSkipNodePoint(xmSkipNodeList *, xmLinkNode *);
 
+//拷贝结点
+void copyNode(xmLinkNode *desc,xmLinkNode *source);
+//要插入的是否满判断
+xmbyte xmSkipNodeListIsFull(xmSkipNodeList *);
+//插入节点
+xmbyte xmSkipNodeListInsert(xmSkipNodeList *, xmLinkNode *);
+//排序插入
+xmbyte xmSkipNodeListSortInsert(xmSkipNodeList *, xmLinkNode *);
 //skNode* updateLevel(skList* sl, double score, char* ele);
 
 #endif
