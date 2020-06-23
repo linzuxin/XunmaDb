@@ -67,7 +67,7 @@ xmbyte xmSkipNodeListInsert(xmSkipNodeList *nodeList, xmLinkNode *node)
             nodeList->next = next;
             result = 1;
         }
-        xmSkipNodeListSortInsert(next, node);
+        xmSkipNodeListSortInsert(next, nodeMax);
     }
     else
     {

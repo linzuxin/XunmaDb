@@ -23,7 +23,7 @@ typedef struct
     xmLinkNode link[xmLinkLen]; //固定大小
     xmbyte len;                 //使用长度
     xmSkipNodeList *next;       //下个链表
-} xmSkipNodeList;              //固定大小数组
+} xmSkipNodeList;               //固定大小数组
 
 //行数1以上的结点
 typedef struct
@@ -33,10 +33,10 @@ typedef struct
 
 typedef struct
 {
-    xmSkipNodeList *zeroLink;                //零层链
+    xmSkipNodeList *zeroLink;               //零层链
     xmLevelNode *levelNodeList[xmLevelLen]; //指向xmLevelNode基本
-    xmbyte len;                              //层级初始化长度
-    int linkLen;                              //零层链长度
+    xmbyte len;                             //层级初始化长度
+    int linkLen;                            //零层链长度
 } xmSkipLink;
 
 //创建零层链
@@ -46,7 +46,7 @@ xmSkipLink *xmSkipLinkCreate();
 //创建数据结点
 xmLinkNode *xmLinkNodeCreate(double score, char *ele);
 //插入节点
-xmbyte xmLinkNodeInsert(xmSkipLink *skipLink,xmLinkNode *node);
+xmbyte xmLinkNodeInsert(xmSkipLink *skipLink, xmLinkNode *node);
 //查找要插入的节点数组
 xmSkipNodeList *findSkipNodeList(xmSkipLink *skipLink, xmLinkNode *node);
 
@@ -59,7 +59,7 @@ xmSkipNodeList *isSkipNodeList(xmSkipNodeList *, xmLinkNode *);
 xmSkipNodeList *isSkipNodePoint(xmSkipNodeList *, xmLinkNode *);
 
 //拷贝结点
-void copyNode(xmLinkNode *desc,xmLinkNode *source);
+void copyNode(xmLinkNode *desc, xmLinkNode *source);
 //要插入的是否满判断
 xmbyte xmSkipNodeListIsFull(xmSkipNodeList *);
 //插入节点
